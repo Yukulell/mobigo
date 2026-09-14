@@ -2,59 +2,50 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mobigo - Emploi du temps</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mobigo - Horaires Interactifs</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="main-header">
-        <div class="logo-container">
-            <h1>Mobigo</h1>
-            <p>Visionneur d'horaires interactif</p>
-        </div>
+        <h1>Mobigo Live</h1>
     </header>
     
-    <main>
-        <div class="controls-card">
-            <div class="form-group">
-                <label>Ligne et direction :</label>
-                <select id="ligne-select">
-                    <option value="lr201_aller">LR201 : Besançon > Vesoul (Express)</option>
-                    <option value="lr201_retour">LR201 : Vesoul > Besançon (Express)</option>
-                    <option value="lr202_aller">LR202 : Besançon > Vesoul</option>
-                    <option value="lr202_retour">LR202 : Vesoul > Besançon</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label>Date du trajet :</label>
-                <input type="date" id="date-trajet">
-            </div>
-
-            <div class="form-group">
-                <label>Arrêt de départ :</label>
-                <select id="depart-select"></select>
-            </div>
-
-            <div class="form-group">
-                <label>Arrêt d'arrivée :</label>
-                <select id="arrivee-select"></select>
-            </div>
+    <div class="controls-card">
+        <div class="form-group full-width">
+            <label>Ligne & Direction</label>
+            <select id="ligne-select">
+                <option value="lr201_aller">LR201: Besançon > Vesoul (Express)</option>
+                <option value="lr201_retour">LR201: Vesoul > Besançon (Express)</option>
+                <option value="lr202_aller">LR202: Besançon > Vesoul</option>
+                <option value="lr202_retour">LR202: Vesoul > Besançon</option>
+            </select>
         </div>
+        <div class="form-group full-width">
+            <label>Date</label>
+            <input type="date" id="date-trajet">
+        </div>
+        <div class="form-group">
+            <label>Départ</label>
+            <select id="depart-select"></select>
+        </div>
+        <div class="form-group">
+            <label>Arrivée</label>
+            <select id="arrivee-select"></select>
+        </div>
+    </div>
 
+    <div class="agenda-wrapper" id="agenda-scroll-area">
         <div class="agenda-container">
-            <!-- Grille des heures générée par JS -->
             <div class="time-labels" id="time-labels"></div>
-            
-            <!-- Zone où les trajets s'affichent -->
             <div class="timeline-grid" id="timeline-grid">
                 <div class="current-time-line" id="current-time-line">
                     <div class="current-time-dot"></div>
                 </div>
-                <!-- Les cartes de bus apparaîtront ici -->
             </div>
         </div>
-    </main>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>
