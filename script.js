@@ -174,8 +174,9 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     // Dessiner les blocs horaires
+        // Dessiner les blocs horaires
     function renderTimeline() {
-        // Nettoyer les anciens trajets (garder seulement la ligne de temps)
+        // Nettoyer les anciens trajets
         document.querySelectorAll('.trip-card').forEach(e => e.remove());
 
         const ligneId = ligneSelect.value;
@@ -192,13 +193,14 @@ document.addEventListener("DOMContentLoaded", () => {
         const trips = db[ligneId].trips;
         const ligneStops = db[ligneId].stops;
 
+        // 1. Collecter et filtrer tous les trajets valides du jour
+        let tripsToRender = [];
+
         trips.forEach(trip => {
-            // 1. Vérifier si le bus circule ce jour-là
             if (!trip.jours.includes(dayOfWeek)) return;
             if (trip.periode === "scolaire" && vac) return;
             if (trip.periode === "vacances" && !vac) return;
 
-            // 2. Vérifier si le bus dessert bien ces deux arrêts spécifiques
             const depTime = trip.times[dIndex];
             const arrTime = trip.times[aIndex];
             if (!depTime || !arrTime) return;
@@ -206,26 +208,75 @@ document.addEventListener("DOMContentLoaded", () => {
             const depMins = timeToMinutes(depTime);
             const arrMins = timeToMinutes(arrTime);
             
-            // 3. Créer la carte HTML (1 pixel = 1 minute)
-            let duration = arrMins - depMins;
-            if (duration < 15) duration = 30; // Hauteur visuelle minimale pour que le texte rentre
+            tripsToRender.push({
+                depTime, arrTime, depMins, arrMins,
+                dName: ligneStops[dIndex],
+                aName: ligneStops[aIndex]
+            });
+        });
 
-            const card = document.createElement('div');
-            card.className = 'trip-card';
-            card.dataset.arrivalMins = arrMins;
-            card.style.top = `${depMins - (START_HOUR * 60)}px`;
-            card.style.height = `${duration}px`;
+        // 2. Trier chronologiquement par heure de départ
+        tripsToRender.sort((a, b) => a.depMins - b.depMins);
 
-            card.innerHTML = `
-                <strong>${depTime} -> ${arrTime}</strong>
-                <span>${ligneStops[dIndex]} > ${ligneStops[aIndex]}</span>
-            `;
+        // 3. Regrouper les trajets qui se chevauchent (algorithme de collision)
+        let clusters = [];
+        let currentCluster = [];
+        let clusterEnd = 0;
 
-            timelineGrid.appendChild(card);
+        tripsToRender.forEach(trip => {
+            if (currentCluster.length === 0) {
+                currentCluster.push(trip);
+                clusterEnd = trip.arrMins;
+            } else {
+                if (trip.depMins < clusterEnd) { 
+                    // Un chevauchement est détecté avec le groupe actuel
+                    currentCluster.push(trip);
+                    clusterEnd = Math.max(clusterEnd, trip.arrMins);
+                } else { 
+                    // Aucun chevauchement, on clôture le groupe et on en commence un nouveau
+                    clusters.push(currentCluster);
+                    currentCluster = [trip];
+                    clusterEnd = trip.arrMins;
+                }
+            }
+        });
+        if (currentCluster.length > 0) {
+            clusters.push(currentCluster);
+        }
+
+        // 4. Injecter les cartes dans le DOM avec les largeurs calculées
+        clusters.forEach(cluster => {
+            // Si 2 bus roulent en même temps, la largeur passe de 90% à 45% chacun
+            const cardWidth = 90 / cluster.length; 
+
+            cluster.forEach((trip, index) => {
+                let duration = trip.arrMins - trip.depMins;
+                if (duration < 15) duration = 30; // Sécurité pour que le texte reste lisible sur les trajets très courts
+
+                const card = document.createElement('div');
+                card.className = 'trip-card';
+                card.dataset.arrivalMins = trip.arrMins;
+                
+                // Positionnement vertical (Le temps)
+                card.style.top = `${trip.depMins - (START_HOUR * 60)}px`;
+                card.style.height = `${duration}px`;
+                
+                // Positionnement horizontal (La gestion des collisions)
+                card.style.width = `calc(${cardWidth}% - 2px)`; // Le -2px crée une petite marge visuelle entre les cartes
+                card.style.left = `${5 + (index * cardWidth)}%`;
+
+                card.innerHTML = `
+                    <strong>${trip.depTime} -> ${trip.arrTime}</strong>
+                    <span>${trip.dName} > ${trip.aName}</span>
+                `;
+
+                timelineGrid.appendChild(card);
+            });
         });
 
         updateCurrentTime();
     }
+
 
     // -------------------------------------------------------------
     // 3. ÉCOUTEURS D'ÉVÉNEMENTS
