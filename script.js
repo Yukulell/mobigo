@@ -223,7 +223,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (nextCardElement) {
             setTimeout(() => {
-                nextCardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // On calcule la position de la carte par rapport au conteneur
+                const scrollPos = nextCardElement.offsetTop - (resultsContainer.clientHeight / 2) + (nextCardElement.clientHeight / 2);
+                
+                // On applique le scroll uniquement sur le conteneur des résultats
+                resultsContainer.scrollTo({
+                    top: scrollPos,
+                    behavior: 'smooth'
+                });
             }, 100);
         }
     }
