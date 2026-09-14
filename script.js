@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+    // --- BASE DE DONNÉES ---
     const db = {
         "lr201_aller": {
             stops: ["BESANÇON Centre St-Pierre", "BESANÇON PEM Viotte", "BESANÇON Temis", "RIOZ Centre", "RIOZ ZA Charrière", "VESOUL Pôle multimodal"],
@@ -80,26 +81,14 @@ document.addEventListener("DOMContentLoaded", () => {
         { start: '2027-07-03', end: '2027-09-01' }
     ];
 
-    const START_HOUR = 4;
-    const END_HOUR = 22;
-    
+    // --- Éléments du DOM ---
     const ligneSelect = document.getElementById('ligne-select');
     const departSelect = document.getElementById('depart-select');
     const arriveeSelect = document.getElementById('arrivee-select');
     const dateInput = document.getElementById('date-trajet');
-    const timeLabelsContainer = document.getElementById('time-labels');
-    const timelineGrid = document.getElementById('timeline-grid');
-    const currentTimeLine = document.getElementById('current-time-line');
-    const scrollArea = document.getElementById('agenda-scroll-area');
+    const resultsContainer = document.getElementById('results-container');
 
-    for (let h = START_HOUR; h <= END_HOUR; h++) {
-        const label = document.createElement('div');
-        label.className = 'time-label';
-        label.style.top = `${(h - START_HOUR) * 60}px`;
-        label.textContent = `${String(h).padStart(2, '0')}:00`;
-        timeLabelsContainer.appendChild(label);
-    }
-
+    // --- Initialisation ---
     const today = new Date();
     dateInput.value = today.toISOString().split('T')[0];
 
@@ -112,6 +101,13 @@ document.addEventListener("DOMContentLoaded", () => {
         if (!timeStr) return null;
         const [h, m] = timeStr.split(':').map(Number);
         return h * 60 + m;
+    }
+
+    function formatDuration(mins) {
+        const h = Math.floor(mins / 60);
+        const m = mins % 60;
+        if (h === 0) return `${m} min`;
+        return `${h}h${m.toString().padStart(2, '0')}`;
     }
 
     function updateStops() {
@@ -130,12 +126,12 @@ document.addEventListener("DOMContentLoaded", () => {
         ligne.stops.forEach((stop, index) => {
             if (index > departIndex) arriveeSelect.add(new Option(stop, index));
         });
-        arriveeSelect.value = ligne.stops.length - 1;
-        renderTimeline();
+        arriveeSelect.value = ligne.stops.length - 1; 
+        renderList();
     }
 
-    function renderTimeline() {
-        document.querySelectorAll('.trip-card').forEach(e => e.remove());
+    function renderList() {
+        resultsContainer.innerHTML = '';
 
         const ligneId = ligneSelect.value;
         const dateStr = dateInput.value;
@@ -147,6 +143,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const dateObj = new Date(dateStr);
         const dayOfWeek = dateObj.getDay();
         const vac = isVacances(dateStr);
+        const isToday = dateStr === today.toISOString().split('T')[0];
+        
+        const currentMins = today.getHours() * 60 + today.getMinutes();
+
         const trips = db[ligneId].trips;
         const ligneStops = db[ligneId].stops;
 
@@ -162,116 +162,84 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!depTime || !arrTime) return;
 
             tripsToRender.push({
-                depTime, arrTime, 
-                depMins: timeToMinutes(depTime), 
+                depTime, arrTime,
+                depMins: timeToMinutes(depTime),
                 arrMins: timeToMinutes(arrTime),
-                dName: ligneStops[dIndex], aName: ligneStops[aIndex]
+                dName: ligneStops[dIndex],
+                aName: ligneStops[aIndex]
             });
         });
 
         tripsToRender.sort((a, b) => a.depMins - b.depMins);
 
-        tripsToRender.forEach(trip => {
-            const realDuration = trip.arrMins - trip.depMins;
-            trip.displayHeight = realDuration < 40 ? 40 : realDuration; 
-            trip.visualEnd = trip.depMins + trip.displayHeight; 
-        });
-
-        let clusters = [];
-        let currentCluster = [];
-        let clusterEnd = 0;
-
-        tripsToRender.forEach(trip => {
-            if (currentCluster.length === 0) {
-                currentCluster.push(trip);
-                clusterEnd = trip.visualEnd;
-            } else {
-                if (trip.depMins < clusterEnd) {
-                    currentCluster.push(trip);
-                    clusterEnd = Math.max(clusterEnd, trip.visualEnd);
-                } else {
-                    clusters.push(currentCluster);
-                    currentCluster = [trip];
-                    clusterEnd = trip.visualEnd;
-                }
-            }
-        });
-        if (currentCluster.length > 0) clusters.push(currentCluster);
-
-        clusters.forEach(cluster => {
-            let columns = []; 
-            cluster.forEach(trip => {
-                let placed = false;
-                for (let col of columns) {
-                    if (trip.depMins >= col[col.length - 1].visualEnd) {
-                        col.push(trip); trip.colIndex = columns.indexOf(col); placed = true; break;
-                    }
-                }
-                if (!placed) { trip.colIndex = columns.length; columns.push([trip]); }
-            });
-
-            const cardWidth = 92 / columns.length;
-
-            cluster.forEach(trip => {
-                const card = document.createElement('div');
-                card.className = 'trip-card';
-                card.dataset.arrivalMins = trip.arrMins;
-                
-                card.style.top = `${trip.depMins - (START_HOUR * 60)}px`;
-                card.style.height = `${trip.displayHeight}px`;
-                card.style.width = `calc(${cardWidth}% - 2px)`;
-                card.style.left = `${8 + (trip.colIndex * cardWidth)}%`;
-
-                if (trip.displayHeight > 45) {
-                    card.innerHTML = `<strong>${trip.depTime} -> ${trip.arrTime}</strong><span>${trip.dName}<br>> ${trip.aName}</span>`;
-                } else {
-                    card.innerHTML = `<strong>${trip.depTime} -> ${trip.arrTime}</strong><span>${trip.dName} > ${trip.aName}</span>`;
-                }
-
-                timelineGrid.appendChild(card);
-            });
-        });
-
-        updateCurrentTime();
-    }
-
-    function updateCurrentTime() {
-        const now = new Date();
-        const currentMins = now.getHours() * 60 + now.getMinutes();
-        const topPx = currentMins - (START_HOUR * 60);
-        
-        if (topPx >= 0 && topPx <= (END_HOUR - START_HOUR) * 60) {
-            currentTimeLine.style.display = 'block';
-            currentTimeLine.style.top = `${topPx}px`;
-        } else {
-            currentTimeLine.style.display = 'none';
+        if (tripsToRender.length === 0) {
+            resultsContainer.innerHTML = '<div class="no-results">Aucun bus ne circule sur ce trajet à cette date.</div>';
+            return;
         }
-        
-        document.querySelectorAll('.trip-card').forEach(card => {
-            const cardArrival = parseInt(card.dataset.arrivalMins);
-            if (cardArrival < currentMins && dateInput.value === today.toISOString().split('T')[0]) {
-                card.classList.add('past');
-            } else {
-                card.classList.remove('past');
-            }
-        });
-    }
 
-    function scrollToCurrentTime() {
-        const now = new Date();
-        const currentMins = now.getHours() * 60 + now.getMinutes();
-        const topPx = currentMins - (START_HOUR * 60);
-        if (topPx > 200) {
-            scrollArea.scrollTop = topPx - 200;
+        let nextFound = false;
+        let nextCardElement = null;
+
+        tripsToRender.forEach(trip => {
+            const duration = trip.arrMins - trip.depMins;
+            let statusClass = "upcoming";
+            let statusText = "";
+
+            if (isToday) {
+                if (currentMins >= trip.arrMins) {
+                    statusClass = "past";
+                    statusText = "Terminé";
+                } else if (currentMins >= trip.depMins && currentMins < trip.arrMins) {
+                    statusClass = "ongoing";
+                    statusText = "En route";
+                } else if (!nextFound) {
+                    statusClass = "next";
+                    statusText = "Prochain départ";
+                    nextFound = true;
+                }
+            }
+
+            const card = document.createElement('div');
+            card.className = `trip-card ${statusClass}`;
+            if (statusClass === "next") nextCardElement = card;
+
+            card.innerHTML = `
+                <div class="time-section">
+                    <span class="time-val">${trip.depTime}</span>
+                    <span class="duration">${formatDuration(duration)}</span>
+                    <span class="time-val">${trip.arrTime}</span>
+                </div>
+                <div class="route-section">
+                    <div>
+                        <div class="stop-name">${trip.dName}</div>
+                        <div class="stop-name dest">↓ ${trip.aName}</div>
+                    </div>
+                    <div class="status-badge">${statusText}</div>
+                </div>
+            `;
+
+            resultsContainer.appendChild(card);
+        });
+
+        if (nextCardElement) {
+            setTimeout(() => {
+                nextCardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 100);
         }
     }
 
+    // --- Écouteurs ---
     ligneSelect.addEventListener('change', updateStops);
     departSelect.addEventListener('change', updateArrivals);
-    arriveeSelect.addEventListener('change', renderTimeline);
-    dateInput.addEventListener('change', renderTimeline);
+    arriveeSelect.addEventListener('change', renderList);
+    dateInput.addEventListener('change', renderList);
 
+    // Démarrage
     updateStops();
-    scrollToCurrentTime();
-    setInterval(updateCurrentTime, 60000);
+    
+    setInterval(() => {
+        if (dateInput.value === new Date().toISOString().split('T')[0]) {
+            renderList();
+        }
+    }, 60000);
 });
