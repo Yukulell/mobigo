@@ -1,8 +1,7 @@
 :root {
-    --mobigo-green: #9bcc3b; /* Vert Mobigo */
+    --mobigo-green: #9bcc3b;
     --mobigo-dark: #2c3e50;
-    --mobigo-light: #f8f9fa;
-    --text-color: #333333;
+    --bg-color: #f0f2f5;
     --border-color: #e0e0e0;
 }
 
@@ -10,186 +9,114 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: var(--mobigo-light);
-    color: var(--text-color);
+    background-color: var(--bg-color);
+    color: #333;
 }
 
-/* En-tête principal */
-.main-header, .ligne-header {
+.main-header {
     background-color: var(--mobigo-dark);
     color: white;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    border-bottom: 5px solid var(--mobigo-green);
-}
-
-.logo-container h1 {
-    margin: 0;
-    color: var(--mobigo-green);
-    font-size: 2rem;
-    text-transform: uppercase;
-}
-
-.logo-container p {
-    margin: 0;
-    font-size: 0.9rem;
-    opacity: 0.8;
-}
-
-main {
-    padding: 2rem 1rem;
-    max-width: 1000px;
-    margin: 0 auto;
-}
-
-/* Grille d'accueil */
-.lignes-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
-
-.card-ligne {
-    background: white;
-    border-radius: 10px;
-    padding: 1.5rem;
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    color: var(--text-color);
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    border: 1px solid var(--border-color);
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card-ligne:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
-    border-color: var(--mobigo-green);
-}
-
-.ligne-badge, .ligne-badge-small {
-    background-color: var(--mobigo-green);
-    color: var(--mobigo-dark);
-    font-weight: bold;
     padding: 1rem;
-    border-radius: 8px;
-    font-size: 1.2rem;
-    margin-right: 1rem;
-}
-
-.ligne-badge-small {
-    padding: 0.5rem;
-    font-size: 1rem;
-}
-
-.ligne-info h3 { margin: 0 0 0.5rem 0; }
-.ligne-info p { margin: 0; color: #666; font-size: 0.9rem; }
-
-/* En-tête de page de ligne */
-.ligne-header {
-    justify-content: flex-start;
-    gap: 1.5rem;
-}
-
-.header-title {
-    display: flex;
-    align-items: center;
-}
-
-.btn-retour {
-    color: white;
-    text-decoration: none;
-    font-weight: bold;
-    border: 1px solid white;
-    padding: 0.5rem 1rem;
-    border-radius: 5px;
-}
-.btn-retour:hover { background-color: rgba(255,255,255,0.1); }
-
-/* Contrôles (Date et Heure) */
-.controls-container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: white;
-    padding: 1rem;
-    border-radius: 8px;
-    margin-bottom: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    flex-wrap: wrap;
-    gap: 1rem;
-}
-
-input[type="date"] {
-    padding: 0.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    font-family: inherit;
-    outline: none;
-}
-input[type="date"]:focus { border-color: var(--mobigo-green); }
-
-.time-indicator {
-    font-weight: bold;
-    color: var(--mobigo-dark);
-}
-#current-time-display {
-    color: var(--mobigo-green);
-    font-size: 1.2rem;
-}
-
-/* Tableau des horaires */
-.table-container {
-    overflow-x: auto;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-}
-
-.horaires-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.horaires-table th, .horaires-table td {
-    padding: 15px;
-    text-align: center;
-    border-bottom: 1px solid var(--border-color);
-    white-space: nowrap;
-}
-
-.horaires-table th {
-    background-color: var(--mobigo-dark);
-    color: white;
-    font-weight: normal;
-}
-
-.stop-name {
-    text-align: left !important;
-    font-weight: bold;
-    background-color: var(--mobigo-light);
+    border-bottom: 4px solid var(--mobigo-green);
     position: sticky;
-    left: 0; /* Permet au nom de l'arrêt de rester visible quand on scroll à droite */
-    z-index: 1;
-    border-right: 2px solid var(--border-color);
+    top: 0;
+    z-index: 100;
 }
 
-/* États des trajets gérés par JavaScript */
-.col-past {
-    background-color: #f0f0f0;
-    color: #999;
+.logo-container h1 { margin: 0; color: var(--mobigo-green); font-size: 1.5rem; text-transform: uppercase; }
+.logo-container p { margin: 0; font-size: 0.8rem; opacity: 0.8; }
+
+main { max-width: 800px; margin: 0 auto; padding: 1rem; }
+
+/* Panneau de contrôle */
+.controls-card {
+    background: white;
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
 }
-.col-next {
-    background-color: rgba(155, 204, 59, 0.15); /* Vert Mobigo transparent */
-    border-left: 3px solid var(--mobigo-green);
-    border-right: 3px solid var(--mobigo-green);
-    font-weight: bold;
+
+.form-group label { font-size: 0.9rem; font-weight: bold; color: var(--mobigo-dark); margin-bottom: 0.3rem; display: block; }
+select, input[type="date"] {
+    width: 100%; padding: 0.6rem; border: 1px solid var(--border-color);
+    border-radius: 5px; font-size: 1rem; box-sizing: border-box; background: #fff;
+}
+
+/* Agenda Container */
+.agenda-container {
+    display: flex;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    overflow: hidden;
+    height: 1020px; /* 17h * 60px/heure */
+    position: relative;
+}
+
+.time-labels {
+    width: 60px;
+    background: #f9f9f9;
+    border-right: 1px solid var(--border-color);
+    position: relative;
+}
+
+.time-label {
+    position: absolute;
+    right: 5px;
+    transform: translateY(-50%);
+    font-size: 0.8rem;
+    color: #666;
+}
+
+.timeline-grid {
+    flex-grow: 1;
+    position: relative;
+    background-size: 100% 60px; /* Grille d'une heure */
+    background-image: linear-gradient(to bottom, var(--border-color) 1px, transparent 1px);
+}
+
+/* Ligne de l'heure actuelle */
+.current-time-line {
+    position: absolute;
+    width: 100%;
+    border-top: 2px solid #ea4335; /* Rouge Google Agenda */
+    z-index: 50;
+    left: 0;
+    pointer-events: none;
+}
+
+.current-time-dot {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background: #ea4335;
+    border-radius: 50%;
+    left: -5px;
+    top: -6px;
+}
+
+/* Carte Trajet (L'événement) */
+.trip-card {
+    position: absolute;
+    left: 5%;
+    width: 90%;
+    background-color: rgba(155, 204, 59, 0.9); /* Vert Mobigo transparent */
+    border-left: 4px solid var(--mobigo-dark);
+    border-radius: 4px;
+    padding: 5px 10px;
+    box-sizing: border-box;
     color: var(--mobigo-dark);
+    font-size: 0.85rem;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
 }
 
-.hidden-col {
-    display: none !important;
-}
+.trip-card strong { display: block; font-size: 0.95rem; margin-bottom: 2px; }
+.trip-card.past { opacity: 0.5; filter: grayscale(100%); }
