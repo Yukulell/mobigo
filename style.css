@@ -3,120 +3,94 @@
     --mobigo-dark: #2c3e50;
     --bg-color: #f0f2f5;
     --border-color: #e0e0e0;
+    --red-line: #ea4335;
 }
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0;
-    padding: 0;
+    margin: 0; padding: 0;
     background-color: var(--bg-color);
     color: #333;
+    display: flex; flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
 }
 
 .main-header {
     background-color: var(--mobigo-dark);
-    color: white;
-    padding: 1rem;
-    border-bottom: 4px solid var(--mobigo-green);
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    color: white; padding: 10px 15px;
+    border-bottom: 3px solid var(--mobigo-green);
+    display: flex; justify-content: space-between; align-items: center;
 }
+.main-header h1 { margin: 0; color: var(--mobigo-green); font-size: 1.2rem; text-transform: uppercase; }
 
-.logo-container h1 { margin: 0; color: var(--mobigo-green); font-size: 1.5rem; text-transform: uppercase; }
-.logo-container p { margin: 0; font-size: 0.8rem; opacity: 0.8; }
-
-main { max-width: 800px; margin: 0 auto; padding: 1rem; }
-
-/* Panneau de contrôle */
 .controls-card {
-    background: white;
-    padding: 1rem;
-    border-radius: 8px;
+    background: white; padding: 10px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    margin-bottom: 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    z-index: 10;
 }
+.form-group { display: flex; flex-direction: column; }
+.form-group.full-width { grid-column: span 2; }
 
-.form-group label { font-size: 0.9rem; font-weight: bold; color: var(--mobigo-dark); margin-bottom: 0.3rem; display: block; }
+label { font-size: 0.75rem; font-weight: bold; color: var(--mobigo-dark); margin-bottom: 2px; }
 select, input[type="date"] {
-    width: 100%; padding: 0.6rem; border: 1px solid var(--border-color);
-    border-radius: 5px; font-size: 1rem; box-sizing: border-box; background: #fff;
+    width: 100%; padding: 6px; border: 1px solid var(--border-color);
+    border-radius: 4px; font-size: 0.9rem; background: #fff; outline: none;
+}
+select:focus, input[type="date"]:focus { border-color: var(--mobigo-green); }
+
+.agenda-wrapper {
+    flex-grow: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    position: relative;
 }
 
-/* Agenda Container */
 .agenda-container {
-    display: flex;
+    display: flex; position: relative;
+    height: 1080px;
     background: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    overflow: hidden;
-    height: 1020px; /* 17h * 60px/heure */
-    position: relative;
 }
 
 .time-labels {
-    width: 60px;
-    background: #f9f9f9;
+    width: 50px; background: #f9f9f9;
     border-right: 1px solid var(--border-color);
-    position: relative;
+    position: sticky; left: 0; z-index: 5;
 }
-
 .time-label {
-    position: absolute;
-    right: 5px;
+    position: absolute; right: 5px;
     transform: translateY(-50%);
-    font-size: 0.8rem;
-    color: #666;
+    font-size: 0.75rem; color: #666;
 }
 
 .timeline-grid {
-    flex-grow: 1;
-    position: relative;
-    background-size: 100% 60px; /* Grille d'une heure */
+    flex-grow: 1; position: relative;
+    background-size: 100% 60px;
     background-image: linear-gradient(to bottom, var(--border-color) 1px, transparent 1px);
 }
 
-/* Ligne de l'heure actuelle */
 .current-time-line {
-    position: absolute;
-    width: 100%;
-    border-top: 2px solid #ea4335; /* Rouge Google Agenda */
-    z-index: 50;
-    left: 0;
-    pointer-events: none;
+    position: absolute; width: 100%;
+    border-top: 2px solid var(--red-line);
+    z-index: 50; left: 0; pointer-events: none;
 }
-
 .current-time-dot {
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    background: #ea4335;
-    border-radius: 50%;
-    left: -5px;
-    top: -6px;
+    position: absolute; width: 10px; height: 10px;
+    background: var(--red-line); border-radius: 50%;
+    left: -5px; top: -6px;
 }
 
-/* Carte Trajet (L'événement) */
 .trip-card {
     position: absolute;
-    left: 5%;
-    width: 90%;
-    background-color: rgba(155, 204, 59, 0.9); /* Vert Mobigo transparent */
+    background-color: rgba(155, 204, 59, 0.95);
     border-left: 4px solid var(--mobigo-dark);
-    border-radius: 4px;
-    padding: 5px 10px;
-    box-sizing: border-box;
-    color: var(--mobigo-dark);
-    font-size: 0.85rem;
-    overflow: hidden;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+    border-radius: 4px; padding: 4px 6px;
+    box-sizing: border-box; color: var(--mobigo-dark);
+    font-size: 0.75rem; overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    display: flex; flex-direction: column;
+    transition: opacity 0.3s;
 }
-
-.trip-card strong { display: block; font-size: 0.95rem; margin-bottom: 2px; }
-.trip-card.past { opacity: 0.5; filter: grayscale(100%); }
+.trip-card strong { font-size: 0.85rem; margin-bottom: 2px; }
+.trip-card.past { opacity: 0.4; filter: grayscale(100%); }
