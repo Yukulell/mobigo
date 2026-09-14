@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LR201 Vesoul > Besançon</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="ligne-header">
+        <a href="index.html" class="btn-retour">← Accueil</a>
+        <div class="header-title">
+            <span class="ligne-badge-small">LR201</span>
+            <h2>Vesoul > Besançon (Express)</h2>
+        </div>
+    </header>
+    
+    <main>
+        <div class="controls-container">
+            <div class="date-picker-group">
+                <label for="date-trajet">Date du trajet :</label>
+                <input type="date" id="date-trajet" name="date-trajet">
+            </div>
+            <div class="time-indicator">Heure actuelle : <span id="current-time-display">--:--</span></div>
+        </div>
+
+        <div class="table-container">
+            <table class="horaires-table" id="horaires">
+                <thead>
+                    <tr>
+                        <th>Arrêts</th>
+                        <th data-jours="1,2,3,4,5" data-periode="scolaire">Tr 1</th>
+                        <th data-jours="1,2,3,4,5,6" data-periode="scolaire">Tr 2</th>
+                        <th data-jours="1,2,3,4,5" data-periode="vacances">Tr 3</th>
+                        <th data-jours="1,2,3,4,5,6" data-periode="toutes">Tr 4</th>
+                        <th data-jours="1,2,3,4,5,6,0" data-periode="toutes">Tr 5</th>
+                        <th data-jours="1,2,3,4,5" data-periode="toutes">Tr 6</th>
+                        <th data-jours="1,2,3,4,5,0" data-periode="toutes">Tr 7</th>
+                        <th data-jours="1,2,3,4,5,6" data-periode="toutes">Tr 8</th>
+                        <th data-jours="1,2,3,4,5" data-periode="toutes">Tr 9</th>
+                        <th data-jours="1,2,3,4,5,6,0" data-periode="toutes">Tr 10</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="stop-name">VESOUL Pôle multimodal</td><td class="time-cell">05:50</td><td class="time-cell">06:25</td><td class="time-cell">06:50</td><td class="time-cell">07:30</td><td class="time-cell">07:50</td><td class="time-cell">08:50</td><td class="time-cell">10:50</td><td class="time-cell">12:50</td><td class="time-cell">15:50</td><td class="time-cell">17:30</td></tr>
+                    <tr><td class="stop-name">RIOZ ZA Charrière</td><td class="time-cell">06:12</td><td class="time-cell">06:47</td><td class="time-cell">07:12</td><td class="time-cell">07:52</td><td class="time-cell">08:11</td><td class="time-cell">09:11</td><td class="time-cell">11:11</td><td class="time-cell">13:11</td><td class="time-cell">16:11</td><td class="time-cell">17:52</td></tr>
+                    <tr><td class="stop-name">RIOZ Centre</td><td class="time-cell">06:15</td><td class="time-cell">06:50</td><td class="time-cell">07:15</td><td class="time-cell">07:55</td><td class="time-cell">08:14</td><td class="time-cell">09:14</td><td class="time-cell">11:14</td><td class="time-cell">13:14</td><td class="time-cell">16:14</td><td class="time-cell">17:55</td></tr>
+                    <tr><td class="stop-name">BESANÇON Temis</td><td class="time-cell">06:32</td><td class="time-cell">07:07</td><td class="time-cell">07:34</td><td class="time-cell">08:16</td><td class="time-cell">08:34</td><td class="time-cell">09:32</td><td class="time-cell">11:32</td><td class="time-cell">13:32</td><td class="time-cell">16:32</td><td class="time-cell">18:16</td></tr>
+                    <tr><td class="stop-name">BESANÇON PEM Viotte</td><td class="time-cell">06:42</td><td class="time-cell">07:17</td><td class="time-cell">07:44</td><td class="time-cell">08:26</td><td class="time-cell">08:44</td><td class="time-cell">09:42</td><td class="time-cell">11:42</td><td class="time-cell">13:42</td><td class="time-cell">16:42</td><td class="time-cell">18:26</td></tr>
+                    <tr><td class="stop-name">BESANÇON Centre St-Pierre</td><td class="time-cell">06:50</td><td class="time-cell">07:25</td><td class="time-cell">07:56</td><td class="time-cell">08:36</td><td class="time-cell">08:56</td><td class="time-cell">09:50</td><td class="time-cell">11:50</td><td class="time-cell">13:50</td><td class="time-cell">16:50</td><td class="time-cell">18:40</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>

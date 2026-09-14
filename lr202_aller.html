@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LR202 Besançon > Vesoul</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="ligne-header">
+        <a href="index.html" class="btn-retour">← Accueil</a>
+        <div class="header-title">
+            <span class="ligne-badge-small">LR202</span>
+            <h2>Besançon > Vesoul</h2>
+        </div>
+    </header>
+    
+    <main>
+        <div class="controls-container">
+            <div class="date-picker-group">
+                <label for="date-trajet">Date du trajet :</label>
+                <input type="date" id="date-trajet" name="date-trajet">
+            </div>
+            <div class="time-indicator">Heure actuelle : <span id="current-time-display">--:--</span></div>
+        </div>
+
+        <div class="table-container">
+            <table class="horaires-table" id="horaires">
+                <thead>
+                    <tr>
+                        <th>Arrêts</th>
+                        <th data-jours="1,2,3,4,5" data-periode="toutes">Tr 1</th>
+                        <th data-jours="1,2,3,4,5,6" data-periode="toutes">Tr 2</th>
+                        <th data-jours="0" data-periode="toutes">Tr 3</th>
+                        <th data-jours="1,2,3,4,5,6" data-periode="toutes">Tr 4</th>
+                        <th data-jours="1,2,3,4,5" data-periode="toutes">Tr 5</th>
+                        <th data-jours="1,2,3,4,5" data-periode="scolaire">Tr 6</th>
+                        <th data-jours="1,2,3,4,5" data-periode="vacances">Tr 7</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td class="stop-name">BESANÇON Centre St-Pierre</td><td class="time-cell">06:10</td><td class="time-cell">06:55</td><td class="time-cell">07:50</td><td class="time-cell">10:05</td><td class="time-cell">12:20</td><td class="time-cell">16:25</td><td class="time-cell">17:15</td></tr>
+                    <tr><td class="stop-name">BESANÇON PEM Viotte</td><td class="time-cell">06:18</td><td class="time-cell">07:03</td><td class="time-cell">07:58</td><td class="time-cell">10:12</td><td class="time-cell">12:28</td><td class="time-cell">16:35</td><td class="time-cell">17:25</td></tr>
+                    <tr><td class="stop-name">BESANÇON Beauquier</td><td class="time-cell">06:23</td><td class="time-cell">07:08</td><td class="time-cell">08:03</td><td class="time-cell">10:16</td><td class="time-cell">12:33</td><td class="time-cell">16:42</td><td class="time-cell">17:32</td></tr>
+                    <tr><td class="stop-name">BESANÇON Temis</td><td class="time-cell">06:26</td><td class="time-cell">07:11</td><td class="time-cell">08:06</td><td class="time-cell">10:19</td><td class="time-cell">12:36</td><td class="time-cell">16:45</td><td class="time-cell">17:35</td></tr>
+                    <tr><td class="stop-name">BESANÇON Valentin</td><td class="time-cell">06:31</td><td class="time-cell">07:16</td><td class="time-cell">08:11</td><td class="time-cell">10:24</td><td class="time-cell">12:41</td><td class="time-cell">16:50</td><td class="time-cell">17:40</td></tr>
+                    <tr><td class="stop-name">DEVECEY Centre commercial</td><td class="time-cell">06:39</td><td class="time-cell">07:24</td><td class="time-cell">08:19</td><td class="time-cell">10:32</td><td class="time-cell">12:48</td><td class="time-cell">16:58</td><td class="time-cell">17:48</td></tr>
+                    <tr><td class="stop-name">VORAY Mairie</td><td class="time-cell">06:41</td><td class="time-cell">07:26</td><td class="time-cell">08:21</td><td class="time-cell">10:34</td><td class="time-cell">12:50</td><td class="time-cell">17:01</td><td class="time-cell">17:51</td></tr>
+                    <tr><td class="stop-name">VORAY Gymnase</td><td class="time-cell">06:43</td><td class="time-cell">07:28</td><td class="time-cell">08:24</td><td class="time-cell">10:36</td><td class="time-cell">12:52</td><td class="time-cell">17:04</td><td class="time-cell">17:54</td></tr>
+                    <tr><td class="stop-name">BUTHIERS Abribus</td><td class="time-cell">-</td><td class="time-cell">07:31</td><td class="time-cell">-</td><td class="time-cell">-</td><td class="time-cell">12:55</td><td class="time-cell">-</td><td class="time-cell">-</td></tr>
+                    <tr><td class="stop-name">PERROUSE École</td><td class="time-cell">-</td><td class="time-cell">07:34</td><td class="time-cell">-</td><td class="time-cell">-</td><td class="time-cell">12:58</td><td class="time-cell">-</td><td class="time-cell">-</td></tr>
+                    <tr><td class="stop-name">CROMARY Fontaine</td><td class="time-cell">-</td><td class="time-cell">07:37</td><td class="time-cell">-</td><td class="time-cell">-</td><td class="time-cell">13:01</td><td class="time-cell">-</td><td class="time-cell">-</td></tr>
+                    <tr><td class="stop-name">NEUVELLE-LÈS-CROMARY Poste</td><td class="time-cell">-</td><td class="time-cell">07:42</td><td class="time-cell">-</td><td class="time-cell">-</td><td class="time-cell">13:06</td><td class="time-cell">-</td><td class="time-cell">-</td></tr>
+                    <tr><td class="stop-name">RIOZ Centre</td><td class="time-cell">06:51</td><td class="time-cell">07:45</td><td class="time-cell">08:33</td><td class="time-cell">10:45</td><td class="time-cell">13:09</td><td class="time-cell">17:10</td><td class="time-cell">18:00</td></tr>
+                    <tr><td class="stop-name">RIOZ Collège</td><td class="time-cell">-</td><td class="time-cell">07:49</td><td class="time-cell">-</td><td class="time-cell">-</td><td class="time-cell">-</td><td class="time-cell">-</td><td class="time-cell">-</td></tr>
+                    <tr><td class="stop-name">RIOZ ZA Charrière</td><td class="time-cell">06:53</td><td class="time-cell">07:51</td><td class="time-cell">08:35</td><td class="time-cell">10:47</td><td class="time-cell">13:11</td><td class="time-cell">17:13</td><td class="time-cell">18:03</td></tr>
+                    <tr><td class="stop-name">HYET Aire de covoiturage</td><td class="time-cell">06:58</td><td class="time-cell">07:56</td><td class="time-cell">08:42</td><td class="time-cell">10:52</td><td class="time-cell">13:18</td><td class="time-cell">17:19</td><td class="time-cell">18:09</td></tr>
+                    <tr><td class="stop-name">VESOUL Pôle multimodal</td><td class="time-cell">07:21</td><td class="time-cell">08:16</td><td class="time-cell">09:06</td><td class="time-cell">11:11</td><td class="time-cell">13:31</td><td class="time-cell">17:41</td><td class="time-cell">18:31</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script src="script.js"></script>
+</body>
+</html>
