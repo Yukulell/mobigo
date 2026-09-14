@@ -1,8 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    // -------------------------------------------------------------
-    // 1. BASE DE DONNÉES COMPLÈTE (Tirée des fiches Mobigo)
-    // 0=Dimanche, 1=Lundi, ..., 6=Samedi
-    // -------------------------------------------------------------
     const db = {
         "lr201_aller": {
             stops: ["BESANÇON Centre St-Pierre", "BESANÇON PEM Viotte", "BESANÇON Temis", "RIOZ Centre", "RIOZ ZA Charrière", "VESOUL Pôle multimodal"],
@@ -84,9 +80,9 @@ document.addEventListener("DOMContentLoaded", () => {
         { start: '2027-07-03', end: '2027-09-01' }
     ];
 
-    // -------------------------------------------------------------
-    // 2. LOGIQUE DE L'INTERFACE
-    // -------------------------------------------------------------
+    const START_HOUR = 4;
+    const END_HOUR = 22;
+    
     const ligneSelect = document.getElementById('ligne-select');
     const departSelect = document.getElementById('depart-select');
     const arriveeSelect = document.getElementById('arrivee-select');
@@ -94,11 +90,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const timeLabelsContainer = document.getElementById('time-labels');
     const timelineGrid = document.getElementById('timeline-grid');
     const currentTimeLine = document.getElementById('current-time-line');
+    const scrollArea = document.getElementById('agenda-scroll-area');
 
-    const START_HOUR = 5; // La grille commence à 05:00
-    const END_HOUR = 22;  // La grille finit à 22:00
-
-    // Générer les labels d'heures (05:00, 06:00...)
     for (let h = START_HOUR; h <= END_HOUR; h++) {
         const label = document.createElement('div');
         label.className = 'time-label';
@@ -107,7 +100,6 @@ document.addEventListener("DOMContentLoaded", () => {
         timeLabelsContainer.appendChild(label);
     }
 
-    // Initialiser la date du jour
     const today = new Date();
     dateInput.value = today.toISOString().split('T')[0];
 
@@ -122,61 +114,27 @@ document.addEventListener("DOMContentLoaded", () => {
         return h * 60 + m;
     }
 
-    // Mettre à jour les listes d'arrêts quand on change de ligne
     function updateStops() {
         const ligne = db[ligneSelect.value];
         departSelect.innerHTML = '';
         ligne.stops.forEach((stop, index) => {
-            if (index < ligne.stops.length - 1) { // On ne peut pas partir du terminus
-                departSelect.add(new Option(stop, index));
-            }
+            if (index < ligne.stops.length - 1) departSelect.add(new Option(stop, index));
         });
         updateArrivals();
     }
 
-    // Mettre à jour l'arrivée en fonction du départ (on ne peut pas reculer)
     function updateArrivals() {
         const ligne = db[ligneSelect.value];
         const departIndex = parseInt(departSelect.value);
         arriveeSelect.innerHTML = '';
         ligne.stops.forEach((stop, index) => {
-            if (index > departIndex) {
-                arriveeSelect.add(new Option(stop, index));
-            }
+            if (index > departIndex) arriveeSelect.add(new Option(stop, index));
         });
-        // Sélectionner le terminus par défaut
         arriveeSelect.value = ligne.stops.length - 1;
         renderTimeline();
     }
 
-    // Calcul de la position de la ligne rouge de l'heure actuelle
-    function updateCurrentTime() {
-        const now = new Date();
-        const currentMins = now.getHours() * 60 + now.getMinutes();
-        const topPx = currentMins - (START_HOUR * 60);
-        
-        if (topPx >= 0 && topPx <= (END_HOUR - START_HOUR) * 60) {
-            currentTimeLine.style.display = 'block';
-            currentTimeLine.style.top = `${topPx}px`;
-        } else {
-            currentTimeLine.style.display = 'none';
-        }
-        
-        // Mettre à jour les cartes passées
-        document.querySelectorAll('.trip-card').forEach(card => {
-            const cardArrival = parseInt(card.dataset.arrivalMins);
-            if (cardArrival < currentMins && dateInput.value === today.toISOString().split('T')[0]) {
-                card.classList.add('past');
-            } else {
-                card.classList.remove('past');
-            }
-        });
-    }
-
-    // Dessiner les blocs horaires
-        // Dessiner les blocs horaires
     function renderTimeline() {
-        // Nettoyer les anciens trajets
         document.querySelectorAll('.trip-card').forEach(e => e.remove());
 
         const ligneId = ligneSelect.value;
@@ -189,11 +147,9 @@ document.addEventListener("DOMContentLoaded", () => {
         const dateObj = new Date(dateStr);
         const dayOfWeek = dateObj.getDay();
         const vac = isVacances(dateStr);
-        
         const trips = db[ligneId].trips;
         const ligneStops = db[ligneId].stops;
 
-        // 1. Collecter et filtrer tous les trajets valides du jour
         let tripsToRender = [];
 
         trips.forEach(trip => {
@@ -205,20 +161,22 @@ document.addEventListener("DOMContentLoaded", () => {
             const arrTime = trip.times[aIndex];
             if (!depTime || !arrTime) return;
 
-            const depMins = timeToMinutes(depTime);
-            const arrMins = timeToMinutes(arrTime);
-            
             tripsToRender.push({
-                depTime, arrTime, depMins, arrMins,
-                dName: ligneStops[dIndex],
-                aName: ligneStops[aIndex]
+                depTime, arrTime, 
+                depMins: timeToMinutes(depTime), 
+                arrMins: timeToMinutes(arrTime),
+                dName: ligneStops[dIndex], aName: ligneStops[aIndex]
             });
         });
 
-        // 2. Trier chronologiquement par heure de départ
         tripsToRender.sort((a, b) => a.depMins - b.depMins);
 
-        // 3. Regrouper les trajets qui se chevauchent (algorithme de collision)
+        tripsToRender.forEach(trip => {
+            const realDuration = trip.arrMins - trip.depMins;
+            trip.displayHeight = realDuration < 40 ? 40 : realDuration; 
+            trip.visualEnd = trip.depMins + trip.displayHeight; 
+        });
+
         let clusters = [];
         let currentCluster = [];
         let clusterEnd = 0;
@@ -226,49 +184,49 @@ document.addEventListener("DOMContentLoaded", () => {
         tripsToRender.forEach(trip => {
             if (currentCluster.length === 0) {
                 currentCluster.push(trip);
-                clusterEnd = trip.arrMins;
+                clusterEnd = trip.visualEnd;
             } else {
-                if (trip.depMins < clusterEnd) { 
-                    // Un chevauchement est détecté avec le groupe actuel
+                if (trip.depMins < clusterEnd) {
                     currentCluster.push(trip);
-                    clusterEnd = Math.max(clusterEnd, trip.arrMins);
-                } else { 
-                    // Aucun chevauchement, on clôture le groupe et on en commence un nouveau
+                    clusterEnd = Math.max(clusterEnd, trip.visualEnd);
+                } else {
                     clusters.push(currentCluster);
                     currentCluster = [trip];
-                    clusterEnd = trip.arrMins;
+                    clusterEnd = trip.visualEnd;
                 }
             }
         });
-        if (currentCluster.length > 0) {
-            clusters.push(currentCluster);
-        }
+        if (currentCluster.length > 0) clusters.push(currentCluster);
 
-        // 4. Injecter les cartes dans le DOM avec les largeurs calculées
         clusters.forEach(cluster => {
-            // Si 2 bus roulent en même temps, la largeur passe de 90% à 45% chacun
-            const cardWidth = 90 / cluster.length; 
+            let columns = []; 
+            cluster.forEach(trip => {
+                let placed = false;
+                for (let col of columns) {
+                    if (trip.depMins >= col[col.length - 1].visualEnd) {
+                        col.push(trip); trip.colIndex = columns.indexOf(col); placed = true; break;
+                    }
+                }
+                if (!placed) { trip.colIndex = columns.length; columns.push([trip]); }
+            });
 
-            cluster.forEach((trip, index) => {
-                let duration = trip.arrMins - trip.depMins;
-                if (duration < 15) duration = 30; // Sécurité pour que le texte reste lisible sur les trajets très courts
+            const cardWidth = 92 / columns.length;
 
+            cluster.forEach(trip => {
                 const card = document.createElement('div');
                 card.className = 'trip-card';
                 card.dataset.arrivalMins = trip.arrMins;
                 
-                // Positionnement vertical (Le temps)
                 card.style.top = `${trip.depMins - (START_HOUR * 60)}px`;
-                card.style.height = `${duration}px`;
-                
-                // Positionnement horizontal (La gestion des collisions)
-                card.style.width = `calc(${cardWidth}% - 2px)`; // Le -2px crée une petite marge visuelle entre les cartes
-                card.style.left = `${5 + (index * cardWidth)}%`;
+                card.style.height = `${trip.displayHeight}px`;
+                card.style.width = `calc(${cardWidth}% - 2px)`;
+                card.style.left = `${8 + (trip.colIndex * cardWidth)}%`;
 
-                card.innerHTML = `
-                    <strong>${trip.depTime} -> ${trip.arrTime}</strong>
-                    <span>${trip.dName} > ${trip.aName}</span>
-                `;
+                if (trip.displayHeight > 45) {
+                    card.innerHTML = `<strong>${trip.depTime} -> ${trip.arrTime}</strong><span>${trip.dName}<br>> ${trip.aName}</span>`;
+                } else {
+                    card.innerHTML = `<strong>${trip.depTime} -> ${trip.arrTime}</strong><span>${trip.dName} > ${trip.aName}</span>`;
+                }
 
                 timelineGrid.appendChild(card);
             });
@@ -277,16 +235,43 @@ document.addEventListener("DOMContentLoaded", () => {
         updateCurrentTime();
     }
 
+    function updateCurrentTime() {
+        const now = new Date();
+        const currentMins = now.getHours() * 60 + now.getMinutes();
+        const topPx = currentMins - (START_HOUR * 60);
+        
+        if (topPx >= 0 && topPx <= (END_HOUR - START_HOUR) * 60) {
+            currentTimeLine.style.display = 'block';
+            currentTimeLine.style.top = `${topPx}px`;
+        } else {
+            currentTimeLine.style.display = 'none';
+        }
+        
+        document.querySelectorAll('.trip-card').forEach(card => {
+            const cardArrival = parseInt(card.dataset.arrivalMins);
+            if (cardArrival < currentMins && dateInput.value === today.toISOString().split('T')[0]) {
+                card.classList.add('past');
+            } else {
+                card.classList.remove('past');
+            }
+        });
+    }
 
-    // -------------------------------------------------------------
-    // 3. ÉCOUTEURS D'ÉVÉNEMENTS
-    // -------------------------------------------------------------
+    function scrollToCurrentTime() {
+        const now = new Date();
+        const currentMins = now.getHours() * 60 + now.getMinutes();
+        const topPx = currentMins - (START_HOUR * 60);
+        if (topPx > 200) {
+            scrollArea.scrollTop = topPx - 200;
+        }
+    }
+
     ligneSelect.addEventListener('change', updateStops);
     departSelect.addEventListener('change', updateArrivals);
     arriveeSelect.addEventListener('change', renderTimeline);
     dateInput.addEventListener('change', renderTimeline);
 
-    // Démarrage initial
     updateStops();
-    setInterval(updateCurrentTime, 60000); // Actualiser la ligne rouge toutes les minutes
+    scrollToCurrentTime();
+    setInterval(updateCurrentTime, 60000);
 });
