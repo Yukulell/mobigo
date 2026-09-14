@@ -3,52 +3,58 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Horaires Mobigo</title>
+    <title>Mobigo - Emploi du temps</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="main-header">
         <div class="logo-container">
             <h1>Mobigo</h1>
-            <p>Bourgogne-Franche-Comté</p>
+            <p>Visionneur d'horaires interactif</p>
         </div>
     </header>
     
     <main>
-        <h2>Sélectionnez votre ligne et direction</h2>
-        <div class="lignes-grid">
-            <!-- LR201 -->
-            <a href="lr201_aller.html" class="card-ligne">
-                <div class="ligne-badge">LR201</div>
-                <div class="ligne-info">
-                    <h3>Besançon > Vesoul</h3>
-                    <p>Express</p>
-                </div>
-            </a>
-            <a href="lr201_retour.html" class="card-ligne">
-                <div class="ligne-badge">LR201</div>
-                <div class="ligne-info">
-                    <h3>Vesoul > Besançon</h3>
-                    <p>Express</p>
-                </div>
-            </a>
+        <div class="controls-card">
+            <div class="form-group">
+                <label>Ligne et direction :</label>
+                <select id="ligne-select">
+                    <option value="lr201_aller">LR201 : Besançon > Vesoul (Express)</option>
+                    <option value="lr201_retour">LR201 : Vesoul > Besançon (Express)</option>
+                    <option value="lr202_aller">LR202 : Besançon > Vesoul</option>
+                    <option value="lr202_retour">LR202 : Vesoul > Besançon</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label>Date du trajet :</label>
+                <input type="date" id="date-trajet">
+            </div>
 
-            <!-- LR202 -->
-            <a href="lr202_aller.html" class="card-ligne">
-                <div class="ligne-badge">LR202</div>
-                <div class="ligne-info">
-                    <h3>Besançon > Vesoul</h3>
-                    <p>Via Devecey, Voray, Perrouse...</p>
+            <div class="form-group">
+                <label>Arrêt de départ :</label>
+                <select id="depart-select"></select>
+            </div>
+
+            <div class="form-group">
+                <label>Arrêt d'arrivée :</label>
+                <select id="arrivee-select"></select>
+            </div>
+        </div>
+
+        <div class="agenda-container">
+            <!-- Grille des heures générée par JS -->
+            <div class="time-labels" id="time-labels"></div>
+            
+            <!-- Zone où les trajets s'affichent -->
+            <div class="timeline-grid" id="timeline-grid">
+                <div class="current-time-line" id="current-time-line">
+                    <div class="current-time-dot"></div>
                 </div>
-            </a>
-            <a href="lr202_retour.html" class="card-ligne">
-                <div class="ligne-badge">LR202</div>
-                <div class="ligne-info">
-                    <h3>Vesoul > Besançon</h3>
-                    <p>Via Voray, Devecey...</p>
-                </div>
-            </a>
+                <!-- Les cartes de bus apparaîtront ici -->
+            </div>
         </div>
     </main>
+    <script src="script.js"></script>
 </body>
 </html>
